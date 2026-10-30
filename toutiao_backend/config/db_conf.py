@@ -24,6 +24,7 @@ engine = create_async_engine(
     echo=False,
     pool_pre_ping=True,
     pool_recycle=3600,
+    connect_args={"init_command": "SET time_zone = '+00:00'"},
 )
 
 AsyncSessionLocal = async_sessionmaker(
