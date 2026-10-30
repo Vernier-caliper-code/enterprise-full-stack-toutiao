@@ -8,6 +8,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config.cache_conf import close_redis
 from .config.db_conf import engine
+from .routers.favorite import router as favorite_router
+from .routers.history import router as history_router
 from .routers.news import router as news_router
 from .routers.users import router as users_router
 from .utils.response import ApiResponse
@@ -30,6 +32,8 @@ app = FastAPI(
 
 app.include_router(users_router)
 app.include_router(news_router)
+app.include_router(favorite_router)
+app.include_router(history_router)
 
 
 @app.exception_handler(StarletteHTTPException)
