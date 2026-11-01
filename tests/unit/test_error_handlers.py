@@ -1,12 +1,12 @@
 import logging
 
 from fastapi import FastAPI, HTTPException
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 
 from toutiao_backend.utils.error_handlers import register_exception_handlers
 
 
-def create_test_client() -> TestClient:
+def create_test_app() -> FastAPI:
     app = FastAPI()
     register_exception_handlers(app)
 
@@ -22,15 +22,24 @@ def create_test_client() -> TestClient:
     async def unhandled_error() -> None:
         raise RuntimeError("boom")
 
-    return TestClient(app, raise_server_exceptions=False)
+    return app
 
 
-def test_http_exception_handler_returns_unified_envelope() -> None:
+async def get(app: FastAPI, path: str):
+    transport = ASGITransport(app=app, raise_app_exceptions=False)
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://testserver",
+    ) as client:
+        return await client.get(path)
+
+
+async def test_http_exception_handler_returns_unified_envelope() -> None:
     # Arrange
-    client = create_test_client()
+    app = create_test_app()
 
     # Act
-    response = client.get("/http-error")
+    response = await get(app, "/http-error")
 
     # Assert
     assert response.status_code == 404
@@ -41,12 +50,12 @@ def test_http_exception_handler_returns_unified_envelope() -> None:
     }
 
 
-def test_validation_exception_handler_returns_unified_envelope() -> None:
+async def test_validation_exception_handler_returns_unified_envelope() -> None:
     # Arrange
-    client = create_test_client()
+    app = create_test_app()
 
     # Act
-    response = client.get("/validation-error?page=invalid")
+    response = await get(app, "/validation-error?page=invalid")
 
     # Assert
     assert response.status_code == 422
@@ -57,18 +66,18 @@ def test_validation_exception_handler_returns_unified_envelope() -> None:
     }
 
 
-def test_unhandled_exception_handler_logs_and_returns_server_error(
+async def test_unhandled_exception_handler_logs_and_returns_server_error(
     caplog,
 ) -> None:
     # Arrange
-    client = create_test_client()
+    app = create_test_app()
 
     # Act
     with caplog.at_level(
         logging.ERROR,
         logger="toutiao_backend.utils.error_handlers",
     ):
-        response = client.get("/unhandled-error")
+        response = await get(app, "/unhandled-error")
 
     # Assert
     assert response.status_code == 500

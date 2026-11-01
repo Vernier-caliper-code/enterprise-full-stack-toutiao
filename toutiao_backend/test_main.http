@@ -1,1 +1,148 @@
 
+@baseUrl = http://localhost:8000
+@username = http_user_{{$timestamp}}
+@password = TestPassword123!
+@newPassword = NewPassword123!
+@token = replace-with-login-token
+@categoryId = 1
+@newsId = 1
+@historyId = 1
+
+### 1. 用户注册
+# @name register
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("status is 200", function () {
+    client.assert(response.status === 200, "registration failed");
+  });
+  client.global.set("token", response.body.data.token);
+%}
+
+### 2. 用户登录
+# @name login
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("status is 200", function () {
+    client.assert(response.status === 200, "login failed");
+  });
+  client.global.set("token", response.body.data.token);
+%}
+
+### 3. 获取用户信息
+GET {{baseUrl}}/api/user/info
+Authorization: {{token}}
+
+### 4. 更新用户信息
+PUT {{baseUrl}}/api/user/update
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "nickname": "HTTP 测试用户",
+  "gender": "unknown",
+  "bio": "由 test_main.http 更新的个人简介",
+  "phone": "13800000000"
+}
+
+### 5. 修改用户密码
+PUT {{baseUrl}}/api/user/password
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "{{password}}",
+  "newPassword": "{{newPassword}}"
+}
+
+### 6. 获取新闻分类
+# @name categories
+GET {{baseUrl}}/api/news/categories?skip=0&limit=100
+
+> {%
+  client.test("status is 200", function () {
+    client.assert(response.status === 200, "categories request failed");
+  });
+  client.global.set("categoryId", response.body.data[0].id);
+%}
+
+### 7. 获取新闻列表
+# @name newsList
+GET {{baseUrl}}/api/news/list?categoryId={{categoryId}}&page=1&pageSize=10
+
+> {%
+  client.test("status is 200", function () {
+    client.assert(response.status === 200, "news list request failed");
+  });
+  client.global.set("newsId", response.body.data.list[0].id);
+%}
+
+### 8. 获取新闻详情
+GET {{baseUrl}}/api/news/detail?id={{newsId}}
+
+### 9. 检查收藏状态
+GET {{baseUrl}}/api/favorite/check?newsId={{newsId}}
+Authorization: {{token}}
+
+### 10. 添加收藏
+POST {{baseUrl}}/api/favorite/add
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "newsId": {{newsId}}
+}
+
+### 11. 获取收藏列表
+GET {{baseUrl}}/api/favorite/list?page=1&pageSize=10
+Authorization: {{token}}
+
+### 12. 取消收藏
+DELETE {{baseUrl}}/api/favorite/remove?newsId={{newsId}}
+Authorization: {{token}}
+
+### 13. 清空收藏
+DELETE {{baseUrl}}/api/favorite/clear
+Authorization: {{token}}
+
+### 14. 添加浏览历史
+# @name addHistory
+POST {{baseUrl}}/api/history/add
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "newsId": {{newsId}}
+}
+
+> {%
+  client.test("status is 200", function () {
+    client.assert(response.status === 200, "history add failed");
+  });
+  client.global.set("historyId", response.body.data.id);
+%}
+
+### 15. 获取浏览历史
+GET {{baseUrl}}/api/history/list?page=1&pageSize=10
+Authorization: {{token}}
+
+### 16. 删除单条浏览历史
+DELETE {{baseUrl}}/api/history/delete/{{historyId}}
+Authorization: {{token}}
+
+### 17. 清空浏览历史
+DELETE {{baseUrl}}/api/history/clear
+Authorization: {{token}}
