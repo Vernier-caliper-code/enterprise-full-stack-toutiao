@@ -16,6 +16,7 @@ class HistoryCreatedOut(SchemaBase):
 
 
 class HistoryItemOut(NewsSummary):
+    news_id: int
     view_time: datetime
 
 

@@ -39,6 +39,7 @@ def history_item_data(history: History) -> HistoryItemOut:
     news = history.news
     return HistoryItemOut(
         id=history.id,
+        news_id=news.id,
         title=news.title,
         description=news.description,
         image=news.image,

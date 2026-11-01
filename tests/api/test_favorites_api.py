@@ -163,6 +163,7 @@ async def test_favorite_list_paginates_and_uses_camel_case(
     assert data["total"] == 2
     assert data["hasMore"] is True
     assert data["list"][0]["id"] == second.id
+    assert data["list"][0]["newsId"] == catalog["latest"].id
     assert data["list"][0]["favoriteTime"]
     assert first.id != second.id
 

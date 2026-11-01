@@ -20,6 +20,7 @@ class FavoriteCreatedOut(SchemaBase):
 
 
 class FavoriteItemOut(NewsSummary):
+    news_id: int
     favorite_time: datetime
 
 

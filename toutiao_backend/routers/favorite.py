@@ -46,6 +46,7 @@ def favorite_item_data(favorite: Favorite) -> FavoriteItemOut:
     news = favorite.news
     return FavoriteItemOut(
         id=favorite.id,
+        news_id=news.id,
         title=news.title,
         description=news.description,
         image=news.image,

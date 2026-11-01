@@ -435,6 +435,7 @@ GET /api/favorite/list?page=1&pageSize=10
     "list": [
       {
         "id": 1,
+        "newsId": 2,
         "title": "新闻标题",
         "description": "",
         "image": "",
@@ -450,6 +451,8 @@ GET /api/favorite/list?page=1&pageSize=10
   }
 }
 ```
+
+> 列表项 `id` 为收藏记录 ID；`newsId` 为新闻 ID，用于跳转新闻详情和取消收藏。
 
 #### 5. 清空所有收藏
 
@@ -528,6 +531,7 @@ GET /api/history/list?page=1&pageSize=10
     "list": [
       {
         "id": 1,
+        "newsId": 2,
         "title": "新闻标题",
         "description": "",
         "image": "",
@@ -543,6 +547,8 @@ GET /api/history/list?page=1&pageSize=10
   }
 }
 ```
+
+> 列表项 `id` 为浏览记录 ID，用于删除记录；`newsId` 为新闻 ID，用于跳转新闻详情。
 
 #### 3. 删除单条浏览记录
 

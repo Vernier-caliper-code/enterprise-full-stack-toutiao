@@ -92,6 +92,10 @@ async def test_history_list_paginates_in_reverse_chronological_order(
     assert data["total"] == 3
     assert data["hasMore"] is True
     assert [item["id"] for item in data["list"]] == [newest.id, middle.id]
+    assert [item["newsId"] for item in data["list"]] == [
+        catalog["latest"].id,
+        catalog["older"].id,
+    ]
     assert data["list"][0]["viewTime"]
     assert oldest.id not in [item["id"] for item in data["list"]]
 
