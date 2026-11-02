@@ -24,6 +24,14 @@ dist/
 .coverage.*
 htmlcov/
 
+# Non-functional artifacts
+nonfunctional/artifacts/
+nonfunctional/frontend/services.json
+nonfunctional/.secrets.baseline
+toutiao_frontend/playwright-report/
+toutiao_frontend/test-results/
+toutiao_frontend/blob-report/
+
 # Environment variables
 .env
 .env.*
